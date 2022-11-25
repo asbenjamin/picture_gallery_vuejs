@@ -17,7 +17,7 @@
                     <input v-model="title" class="input is-small" type="text" placeholder="title" required>
                     <input v-model="description" class="input" type="text" placeholder="description" required>
                     <!-- <input type="text" name="description" v-model="description" placeholder="description"> -->
-                    <button @click="onUpload">Upload!</button>
+                    <button @click.prevent="onUpload">Upload!</button>
                 </div>
                 <article class="message is-danger" v-if="errors.length > 0">
                     <div class="message-header">
@@ -50,6 +50,7 @@
 
 <script>
 import axios from 'axios'
+import { toast } from 'bulma-toast'
 
 export default {
     name: 'Dashboard',
@@ -102,6 +103,18 @@ export default {
                             '/api/v1/upload-image',
                             formData,
                             { headers: { "Content-Type": "multipart/form-data" }, "X-CSRFToken": "{{ csrf_token }}" })
+                        .then( response => {
+                            toast({
+                                message: 'The picrure was added',
+                                type: 'is-success',
+                                dismissible: true,
+                                pauseOnHover: true,
+                                duration: 2000,
+                                position: 'bottom-right',
+                            })
+
+                            this.$router.push('/dashboard')
+                        })
                         .catch(error => {
                             console.log(JSON.stringify(error))
                         })
