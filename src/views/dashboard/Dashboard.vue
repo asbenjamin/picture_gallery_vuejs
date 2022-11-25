@@ -17,7 +17,7 @@
                     <input v-model="title" class="input is-small" type="text" placeholder="title" required>
                     <input v-model="description" class="input" type="text" placeholder="description" required>
                     <!-- <input type="text" name="description" v-model="description" placeholder="description"> -->
-                    <button @click.prevent="onUpload">Upload!</button>
+                    <button @click="onUpload">Upload!</button>
                 </div>
                 <article class="message is-danger" v-if="errors.length > 0">
                     <div class="message-header">
@@ -50,7 +50,6 @@
 
 <script>
 import axios from 'axios'
-import { toast } from 'bulma-toast'
 
 export default {
     name: 'Dashboard',
