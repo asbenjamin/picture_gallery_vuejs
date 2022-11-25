@@ -17,7 +17,7 @@
                     <input v-model="title" class="input is-small" type="text" placeholder="title" required>
                     <input v-model="description" class="input" type="text" placeholder="description" required>
                     <!-- <input type="text" name="description" v-model="description" placeholder="description"> -->
-                    <button @click.prevent="onUpload">Upload!</button>
+                    <button @click="onUpload">Upload!</button>
                 </div>
                 <article class="message is-danger" v-if="errors.length > 0">
                     <div class="message-header">
@@ -35,8 +35,10 @@
                     <h2 class="subtitle">Picture {{ picture.id }}</h2>
                     <figure>
                         <img :src="picture.image_url">
-                        <p>{{ picture.title }}</p>
-                        <p>{{ picture.description }}</p>
+                        <br>
+                        <b>Title: </b><em>{{ picture.title }}</em>
+                        <br>
+                        <b>Description: </b><em>{{ picture.description }}</em>
                     </figure>
             
                 </div>
@@ -87,25 +89,36 @@ export default {
             // form validation
             this.errors = [];
             if (!this.selected_picture) {
-                this.errors.push('File required');
+                this.errors.push('File Required');
             }
+            else {
+                let formData = new FormData()
+                formData.append('picture', this.selected_picture)
+                formData.append('title', this.title)
+                formData.append('description', this.description)
+                if (formData.has('picture') && formData.has('title') && formData.has('description')) {
+                    axios
+                        .post(
+                            '/api/v1/upload-image',
+                            formData,
+                            { headers: { "Content-Type": "multipart/form-data" }, "X-CSRFToken": "{{ csrf_token }}" })
+                        .then( response => {
+                            toast({
+                                message: 'The picrure was added',
+                                type: 'is-success',
+                                dismissible: true,
+                                pauseOnHover: true,
+                                duration: 2000,
+                                position: 'bottom-right',
+                            })
 
-            let formData = new FormData()
-            formData.append('picture', this.selected_picture)
-            formData.append('title', this.title)
-            formData.append('description', this.description)
-            if (formData.has('picture') && formData.has('title') && formData.has('description')){
-                axios
-                    .post(
-                        '/api/v1/upload-image',
-                        formData,
-                        { headers: { "Content-Type": "multipart/form-data" }, "X-CSRFToken": "{{ csrf_token }}" })
-                    .catch(error => {
-                        console.log(JSON.stringify(error))
-                    })
-            }
-
-        
+                            this.$router.push('/dashboard')
+                        })
+                        .catch(error => {
+                            console.log(JSON.stringify(error))
+                        })
+                }
+            }  
     }
 }
 
